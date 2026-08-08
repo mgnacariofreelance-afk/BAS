@@ -7,42 +7,26 @@ const sample = [
   { id: 'SUB-0002', client: 'Happy Paws', plan: 'POS Support Care', fee: 1500, start: '2026-07-20', lastPaid: '2026-08-20', nextDue: '2026-09-20', status: 'ACTIVE' },
   { id: 'SUB-0003', client: 'Juan Agri Supply', plan: 'Premium Care', fee: 3500, start: '2026-06-01', lastPaid: '2026-08-01', nextDue: '2026-09-01', status: 'PAST DUE' },
 ];
-
 const peso = (n: number) => `₱${n.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
 
 export default function SubscriptionsPage() {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState(sample);
   const mrr = useMemo(() => rows.filter(r => r.status !== 'CANCELLED').reduce((s, r) => s + r.fee, 0), [rows]);
-
   const addSubscription = () => {
     setRows(r => [...r, { id: `SUB-${String(r.length + 1).padStart(4, '0')}`, client: 'New Customer', plan: 'BAS Care Plan', fee: 2000, start: '2026-08-09', lastPaid: '—', nextDue: '2026-09-09', status: 'ACTIVE' }]);
     setOpen(false);
   };
-
-  return (
-    <main className="sub-page">
-      <header className="sub-header">
-        <div className="brand-lockup"><div className="bc-mark">BC</div><div><b>BLESSED COMPANIONS</b><small>Business Accounting System</small></div></div>
-        <div><h1>Care Plan Subscriptions</h1><p>Monthly recurring service contracts for BAS customers.</p></div>
-        <button className="primary" onClick={() => setOpen(true)}>+ New Subscription</button>
-      </header>
-
-      <section className="metrics">
-        <div><span>Active Subscriptions</span><strong>{rows.filter(r => r.status === 'ACTIVE').length}</strong></div>
-        <div><span>Monthly Recurring Revenue</span><strong>{peso(mrr)}</strong></div>
-        <div><span>Past Due</span><strong className="danger">{rows.filter(r => r.status === 'PAST DUE').length}</strong></div>
-        <div><span>Next Billing</span><strong>₱4,000</strong></div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-title"><div><b>Customer Care Plans</b><small>No fixed day-of-month is required. The next cycle is derived from the prior billing/payment event.</small></div><span className="chip">MONTHLY</span></div>
-        <div className="table-wrap"><table><thead><tr><th>Subscription</th><th>Client</th><th>Plan</th><th>Monthly Fee</th><th>Last Paid</th><th>Next Due</th><th>Status</th></tr></thead><tbody>{rows.map(r => <tr key={r.id}><td>{r.id}</td><td>{r.client}</td><td>{r.plan}</td><td>{peso(r.fee)}</td><td>{r.lastPaid}</td><td>{r.nextDue}</td><td><span className={`status ${r.status === 'ACTIVE' ? 'active' : 'past'}`}>{r.status}</span></td></tr>)}</tbody></table></div>
-      </section>
-
-      <section className="rule"><b>Billing rule</b><span>Subscription creation generates the recurring service agreement only. Each cycle creates an invoice/receivable. Payment must be recorded separately and follows BAS cash, Undeposited Funds, bank and reconciliation rules.</span></section>
-
-      {open && <div className="overlay"><div className="modal"><div className="modal-head"><h2>New Care Plan Subscription</h2><button onClick={() => setOpen(false)}>×</button></div><label>Client<select><option>ABC Petshop</option><option>Happy Paws</option><option>Juan Agri Supply</option></select></label><label>Plan Name<input defaultValue="BAS Care Plan" /></label><label>Monthly Fee<input type="number" defaultValue="2000" /></label><label>Start Date<input type="date" defaultValue="2026-08-09" /></label><label>Billing Interval<select><option>Monthly</option></select></label><p className="hint">No billing day is required. The next cycle will be calculated from the prior billing/payment event.</p><div className="actions"><button onClick={() => setOpen(false)}>Cancel</button><button className="primary" onClick={addSubscription}>Save Subscription</button></div></div></div>}
-    </main>
-  );
+  return <main className="sub-page">
+    <style jsx global>{`body{margin:0}.sub-page{min-height:100vh;padding:28px 34px;background:radial-gradient(circle at 15% 0%,#101a36 0,#05070d 34%,#020307 100%);color:#eef4ff;font-family:Inter,Arial,sans-serif}.sub-header{display:grid;grid-template-columns:1fr 1.5fr auto;gap:24px;align-items:center;margin-bottom:24px}.brand-lockup{display:flex;align-items:center;gap:12px}.brand-lockup b{display:block;letter-spacing:2px;font-size:14px}.brand-lockup small{display:block;color:#91a0bd;margin-top:3px}.bc-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(145deg,#111827,#0b1224);border:1px solid #2d66ff;box-shadow:0 0 20px #075cff55;color:#2f80ff;display:grid;place-items:center;font-size:22px;font-weight:900;font-style:italic}.sub-header h1{margin:0;font-size:28px}.sub-header p{margin:6px 0 0;color:#91a0bd}.primary{border:1px solid #1d6dff;background:linear-gradient(135deg,#0b4cff,#147dff);color:white;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer;box-shadow:0 0 20px #0868ff30}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.metrics>div,.panel,.rule{background:linear-gradient(145deg,#0c111d,#080b13);border:1px solid #1a2948;border-radius:14px;box-shadow:0 8px 30px #00000033}.metrics>div{padding:18px}.metrics span{display:block;color:#8493b0;font-size:12px}.metrics strong{display:block;margin-top:8px;font-size:24px;color:#f4f7ff}.danger{color:#ff6674!important}.panel{overflow:hidden}.panel-title{padding:16px 18px;border-bottom:1px solid #1a2948;display:flex;justify-content:space-between;align-items:center}.panel-title b{display:block}.panel-title small{display:block;color:#8493b0;margin-top:4px}.chip,.status{font-size:10px;font-weight:800;letter-spacing:.7px;border-radius:999px;padding:5px 9px}.chip{color:#52c7ff;background:#06233a;border:1px solid #0b6b9f}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 15px;text-align:left;border-bottom:1px solid #121d31;font-size:12px;white-space:nowrap}th{background:#080d18;color:#71809e;font-weight:600}td{color:#dbe5f5}.status.active{color:#59e39b;background:#073021}.status.past{color:#ff9a6b;background:#3a1b10}.rule{margin-top:18px;padding:15px 18px;display:flex;gap:12px;color:#a8b7cf;font-size:12px}.rule b{color:#51bfff;white-space:nowrap}.overlay{position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:18px;z-index:20}.modal{width:min(520px,100%);background:#0b101b;border:1px solid #254b8f;border-radius:16px;padding:22px;box-shadow:0 25px 80px #000}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal h2{margin:0}.modal-head button{border:0;background:transparent;color:#a9b8d0;font-size:26px;cursor:pointer}.modal label{display:grid;gap:6px;color:#9aa9c3;font-size:12px;margin:12px 0}.modal input,.modal select{background:#070b13;color:#eef4ff;border:1px solid #263a60;border-radius:8px;padding:10px}.hint{font-size:11px;color:#6f82a3;background:#071a2c;border:1px solid #123e64;border-radius:8px;padding:10px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.actions button:not(.primary){border:1px solid #2a3954;background:#111827;color:#c8d3e6;border-radius:9px;padding:10px 14px;cursor:pointer}@media(max-width:900px){.sub-header{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.sub-page{padding:18px}}@media(max-width:560px){.metrics{grid-template-columns:1fr}.sub-header h1{font-size:23px}.rule{flex-direction:column}}`}</style>
+    <header className="sub-header">
+      <div className="brand-lockup"><div className="bc-mark">BC</div><div><b>BLESSED COMPANIONS</b><small>Business Accounting System</small></div></div>
+      <div><h1>Care Plan Subscriptions</h1><p>Monthly recurring service contracts for BAS customers.</p></div>
+      <button className="primary" onClick={() => setOpen(true)}>+ New Subscription</button>
+    </header>
+    <section className="metrics"><div><span>Active Subscriptions</span><strong>{rows.filter(r => r.status === 'ACTIVE').length}</strong></div><div><span>Monthly Recurring Revenue</span><strong>{peso(mrr)}</strong></div><div><span>Past Due</span><strong className="danger">{rows.filter(r => r.status === 'PAST DUE').length}</strong></div><div><span>Next Billing</span><strong>₱4,000</strong></div></section>
+    <section className="panel"><div className="panel-title"><div><b>Customer Care Plans</b><small>No fixed day-of-month is required. The next cycle is derived from the prior billing/payment event.</small></div><span className="chip">MONTHLY</span></div><div className="table-wrap"><table><thead><tr><th>Subscription</th><th>Client</th><th>Plan</th><th>Monthly Fee</th><th>Last Paid</th><th>Next Due</th><th>Status</th></tr></thead><tbody>{rows.map(r => <tr key={r.id}><td>{r.id}</td><td>{r.client}</td><td>{r.plan}</td><td>{peso(r.fee)}</td><td>{r.lastPaid}</td><td>{r.nextDue}</td><td><span className={`status ${r.status === 'ACTIVE' ? 'active' : 'past'}`}>{r.status}</span></td></tr>)}</tbody></table></div></section>
+    <section className="rule"><b>Billing rule</b><span>Subscription creation generates the recurring service agreement only. Each cycle creates an invoice/receivable. Payment must be recorded separately and follows BAS cash, Undeposited Funds, bank and reconciliation rules.</span></section>
+    {open && <div className="overlay"><div className="modal"><div className="modal-head"><h2>New Care Plan Subscription</h2><button onClick={() => setOpen(false)}>×</button></div><label>Client<select><option>ABC Petshop</option><option>Happy Paws</option><option>Juan Agri Supply</option></select></label><label>Plan Name<input defaultValue="BAS Care Plan" /></label><label>Monthly Fee<input type="number" defaultValue="2000" /></label><label>Start Date<input type="date" defaultValue="2026-08-09" /></label><label>Billing Interval<select><option>Monthly</option></select></label><p className="hint">No billing day is required. The next cycle will be calculated from the prior billing/payment event.</p><div className="actions"><button onClick={() => setOpen(false)}>Cancel</button><button className="primary" onClick={addSubscription}>Save Subscription</button></div></div></div>}
+  </main>;
 }
